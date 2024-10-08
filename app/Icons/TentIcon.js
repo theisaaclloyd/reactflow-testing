@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { memo } from 'react';
 
-const Icon = ({ width = 50, height = 50, color = '#4CAF50' }) => (
+const Tent = ({ width = 50, height = 50, color = '#4CAF50' }) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 100 100"
@@ -20,6 +20,6 @@ const Icon = ({ width = 50, height = 50, color = '#4CAF50' }) => (
 
 export default memo(({ data }) => {
 	return (
-		<Icon width={50} height={50} color={data.color || '#4CAF50'} />
+		<Tent width={50} height={50} color={data.color || '#4CAF50'} />
 	);
 });
