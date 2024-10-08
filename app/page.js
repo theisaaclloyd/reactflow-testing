@@ -1,26 +1,24 @@
 "use client";
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   MiniMap,
   Controls,
   Background,
   useNodesState,
-  useEdgesState,
-  addEdge,
-  Panel,
-  useReactFlow
+  useReactFlow,
+  SelectionMode
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 
-import { v1 as uuidv1 } from 'uuid';
+import { v1 as getId } from 'uuid';
 
 import FrameNode from './FrameNode';
 import ComponentPanel from './ComponentPanel';
 import TentIcon from './Icons/TentIcon';
 
-const getId = () => `${uuidv1()}`;
+//const getId = () => `${uuidv1()}`;
 
 const nodeTypes = {
   frame_1: FrameNode,
@@ -38,52 +36,61 @@ export default function App() {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  const onDrop = useCallback((event) => {
-    event.preventDefault();
+  // drop event handler
+  const onDrop = useCallback((e) => {
+    e.preventDefault();
 
-    const type = event.dataTransfer.getData('application/reactflow');
+    const type = e.dataTransfer.getData('application/reactflow');
 
     if (typeof type === 'undefined' || !type) {
       return;
     }
 
     const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
+      x: e.clientX,
+      y: e.clientY,
     });
 
     const newNode = {
       id: `${getId()}`,
       type,
       position,
-      zIndex: (type === 'frame_1') ? 1 : 10,
+      zIndex: (type === 'frame_1') ? 1 : 10, // I dont think this works; find a way to force frame to back
       data: {
         label: `${type}`,
         createdAt: new Date().toLocaleString(),
       },
     };
 
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nodes) => nodes.concat(newNode));
   }, [screenToFlowPosition, setNodes]);
 
   return (
     <div className='bg-white w-full h-full'>
       <ReactFlow
+        // node elements
         nodes={nodes}
         onNodesChange={onNodesChange}
 
+        // drag and drop stuff
         onDrop={onDrop}
         onDragOver={onDragOver}
 
-
+        // specify custom node types
         nodeTypes={nodeTypes}
 
-        snapToGrid
-        snapGrid={[20, 20]}
+        // grid settings
+        //snapToGrid
+        //snapGrid={[20, 20]}
+
+        // viewport controls
+        panOnScroll={true}
+        selectionOnDrag={true}
+        panOnDrag={false}
+        selectionMode={SelectionMode.Partial}
+        fitView={true}
 
         attributionPosition='hidden'
-
-        fitView
       >
         <Controls position='bottom-right' />
         <MiniMap position='bottom-left' pannable zoomable />
